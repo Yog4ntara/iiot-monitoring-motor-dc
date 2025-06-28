@@ -1,6 +1,7 @@
 # Dashboard IIoT Motor DC - Sistem Monitoring dan Kontrol
 
-![Dashboard Preview](assets/dashboard-preview.png)
+![Dashboard Preview - Light Mode](assets/dashboard-preview-light.png)
+![Dashboard Preview - Dark Mode](assets/dashboard-preview-dark.png)
 
 ## 📋 Deskripsi Sistem
 
@@ -54,8 +55,8 @@ Sebelum memulai instalasi, pastikan sistem Anda memiliki:
 
 #### Opsi A: Jika menggunakan Git
 ```bash
-git clone [repository-url]
-cd project
+git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git
+cd dashboard-iiot-motor-dc
 ```
 
 #### Opsi B: Jika mendapat file ZIP
