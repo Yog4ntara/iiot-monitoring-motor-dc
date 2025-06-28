@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard IIoT Motor</title>
+    <link rel="icon" href="assets/TF.svg" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="theme-body font-sans antialiased">
+    
+    <!-- Notifikasi -->
+    <div id="notification-banner" class="fixed top-5 left-1/2 transform -translate-x-1/2 min-w-[280px] sm:min-w-[350px] p-3 rounded-md shadow-lg text-white text-sm z-[1000] opacity-0 -translate-y-full transition-all duration-500 ease-in-out hidden">
+        <span id="notification-message">Pesan notifikasi di sini.</span>
+    </div>
+
+    <!-- Site -->
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="site-header shadow-md p-3 sticky top-0 z-50">
+            <div class="container mx-auto flex justify-between items-center">
+                <!-- Logo dan Judul -->
+                <div class="flex items-center">
+                    <div class="w-16 h-10 md:w-20 md:h-12 mr-2 md:mr-3 rounded-md overflow-hidden">
+                        <img id="main-logo" src="assets/logo-TF.svg" alt="Logo" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="site-subtitle">TF4017 Industrial Internet of Things</span>
+                        <h1 class="main-title">Dashboard Sistem Motor DC IIoT</h1>
+                    </div>
+                </div>                <!-- Dark Mode Toggle -->
+                  <div class="flex items-center space-x-3 md:space-x-4">
+                    <button id="dark-mode-toggle" class="dark-mode-toggle" title="Toggle Dark Mode">
+                        <span id="dark-mode-icon">🌙</span>
+                    </button>
+                </div>
+
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto p-4 md:p-6">            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Kolom Kiri -->
+                <section class="lg:col-span-2 space-y-6">                    <!-- Kondisi Sistem -->
+                    <div class="card p-4 md:p-5 rounded-xl shadow-lg">
+                        <h2 class="card-title">Kondisi Sistem</h2>
+                        
+                        <!-- Status Grid - Layout Horizontal 3 Kolom -->
+                        <div class="system-status-grid grid grid-cols-1 md:grid-cols-3 gap-4">                            <!-- Waktu Sistem -->
+                            <div class="status-container-horizontal p-3 theme-status-bg rounded-lg theme-border border">
+                                <h3 class="card-subtitle mb-2 text-xs">Waktu Sistem</h3>
+                                <div class="flex items-center justify-center">
+                                    <p id="system-time-card" class="status-text-primary system-time-text text-center">Memuat...</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Status Operasional Motor -->
+                            <div class="status-container-horizontal p-3 theme-status-bg rounded-lg theme-border border">
+                                <h3 class="card-subtitle mb-2 text-xs">Status Operasional Motor</h3>
+                                <div class="flex items-center">
+                                    <span id="motor-status-light" class="status-indicator-large status-off mr-3"></span>
+                                    <div>
+                                        <p id="motor-operational-status" class="status-text-primary">MATI</p>
+                                        <p class="status-text-secondary">Motor Controller</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Status MQTT -->
+                            <div class="status-container-horizontal p-3 theme-status-bg rounded-lg theme-border border">
+                                <h3 class="card-subtitle mb-2 text-xs">Koneksi MQTT</h3>
+                                <div class="flex items-center">
+                                    <span id="mqtt-status-indicator" class="status-indicator-large status-connecting mr-3" title="Status Koneksi MQTT"></span>
+                                    <div>
+                                        <p id="mqtt-status-text" class="status-text-primary">Menghubungkan...</p>
+                                        <p class="status-text-secondary">Broker Communication</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-3 md:p-5 rounded-xl shadow-lg">
+                        <h2 class="card-title">Data Historis Kecepatan Motor</h2>
+                        <div class="chart-container lg-chart-container theme-chart-bg p-2 rounded-lg">
+                            <canvas id="motorSpeedChart"></canvas>
+                        </div>
+                    </div>                    <div class="card p-3 md:p-5 rounded-xl shadow-lg">
+                        <h2 class="card-title">Data Historis Daya Motor</h2>
+                        <div class="chart-container lg-chart-container theme-chart-bg p-2 rounded-lg">
+                            <canvas id="motorPowerChart"></canvas>
+                        </div>
+                    </div></section>                <!-- Kolom Kanan -->
+                <aside class="lg:col-span-1 space-y-6">                    <!-- Kontrol Setpoint -->
+                    <div class="card p-4 md:p-5 rounded-xl shadow-lg">
+                        <h2 class="card-title">Kontrol Setpoint</h2>
+                        <div class="space-y-3 text-sm">
+                            <div>
+                                <label for="target-setpoint-input" class="label mb-2 block">Target Setpoint (RPM):</label>
+                                <div class="setpoint-control-group flex gap-2">
+                                    <input type="number" id="target-setpoint-input" value="0" class="form-input flex-1 p-2 rounded-md">
+                                    <button id="publish-setpoint-button" class="button-primary inline-button px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 whitespace-nowrap">
+                                        Kirim
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Overview Motor -->
+                    <div class="card p-4 md:p-5 rounded-xl shadow-lg">
+                        <h2 class="card-title">Overview Motor</h2>                        <!-- Kecepatan Aktual -->
+                        <div class="mb-4">
+                            <h3 class="card-subtitle mb-1">Kecepatan Aktual</h3>
+                            <p class="text-3xl md:text-4xl lg:text-5xl font-bold text-blue-600 dark:text-blue-400 text-center">
+                                <span id="current-motor-speed">0</span> <span class="text-lg md:text-xl align-baseline ml-1">RPM</span>
+                            </p>
+                        </div>
+
+                        <!-- Tegangan Aktual -->
+                        <div class="mb-4">
+                            <h3 class="card-subtitle mb-1">Tegangan Aktual</h3>
+                            <p class="text-3xl md:text-4xl lg:text-5xl font-bold text-orange-600 dark:text-orange-400 text-center">
+                                <span id="current-motor-voltage">0</span> <span class="text-lg md:text-xl align-baseline ml-1">V</span>
+                            </p>
+                        </div>
+                          <!-- Detail Parameters -->
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between items-center py-1">
+                                <span class="label">Target RPM:</span>
+                                <span id="current-target-rpm-from-motor" class="detail-value">- RPM</span>
+                            </div>                            <div class="flex justify-between items-center py-1">
+                                <span class="label">Frekuensi Aktual:</span>
+                                <span id="current-motor-frequency" class="detail-value">0 Hz</span>
+                            </div>
+                            <hr class="theme-border my-1">
+                            <div class="flex justify-between items-center py-1">
+                                <span class="label">Kp:</span>
+                                <span id="current-kp-value" class="detail-value">-</span>
+                            </div>
+                            <div class="flex justify-between items-center py-1">
+                                <span class="label">Ki:</span>
+                                <span id="current-ki-value" class="detail-value">-</span>
+                            </div>
+                            <div class="flex justify-between items-center py-1">
+                                <span class="label">Kd:</span>
+                                <span id="current-kd-value" class="detail-value">-</span>
+                            </div>
+                        </div>
+                    </div>                    
+                    <div class="card p-4 md:p-5 rounded-xl shadow-lg">
+                        <h2 class="card-title">Spesifikasi Motor</h2>
+                        <div class="space-y-1.5 text-sm">
+                            <p><strong class="label !inline">ID Motor:</strong> <span id="motor-id-display" class="detail-value">M001</span></p>
+                            <p><strong class="label !inline">Lokasi:</strong> <span id="motor-location-display" class="detail-value">Laboratorium IIOT, Lantai 4, Labtek VI</span></p>
+                            <p><strong class="label !inline">Jenis Motor:</strong> <span id="motor-type-display" class="detail-value">-</span></p>
+                            <p><strong class="label !inline">PLC:</strong> <span id="motor-plc-display" class="detail-value">Omron CP2E-N</span></p>                            <p><strong class="label !inline">Range Frekuensi:</strong> <span class="detail-value">2.1 - 9.9 kHz</span></p>
+                            <p><strong class="label !inline">Catatan:</strong> <span id="motor-notes-display" class="detail-value">Kelompok mantap</span></p>
+                        </div>
+                    </div>
+
+                </aside>
+            </div>
+        </main>
+
+        <footer class="site-footer text-center p-4 mt-auto">
+            <p>&copy; <span id="current-year"></span> | TF4017-Industrial Internet of Things Kelompok 2 | Kit Motor DC</p>
+        </footer>    
+    </div>
+
+    <!-- Floating Action Button untuk Analisa AI -->
+    <button id="analyze-motor-status-icon-button" class="fab-analyze-ai" title="Analisis Masalah Motor dengan AI">
+        <span class="fab-icon">✨</span>
+        <span class="fab-text">Analisa AI</span>
+    </button>
+
+    <div id="gemini-analysis-modal" class="modal">
+        <div class="modal-content mt-10">
+            <span id="gemini-modal-close-button" class="modal-close-button">&times;</span>
+            <h3 class="modal-title">✨ Hasil Analisis AI</h3>
+            <div id="gemini-analysis-content" class="modal-body whitespace-pre-wrap">
+                <div class="loader"></div>
+            </div>
+        </div>
+    </div>    <script src="js/darkMode.js"></script>
+    <script src="js/apiHandler.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/uiHandler.js"></script>
+    <script src="js/mqtt.js"></script>
+    <script src="js/gemini.js"></script>
+    <script src="js/mqtt.min.js"></script>
+</body>
+</html>

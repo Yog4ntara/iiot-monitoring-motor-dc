@@ -1,0 +1,1087 @@
+/* =================================================================== */
+/* 1. CSS CUSTOM PROPERTIES (VARIABEL)                                */
+/* =================================================================== */
+:root {
+    /* === COLOR PALETTE - LIGHT MODE === */
+    /* Primary Colors - Brand Identity */
+    --color-brand-primary: #175590;             /* Brand blue untuk header utama */
+    --color-brand-accent: #175590;              /* Accent blue untuk card titles */
+      /* Background Colors */
+    --color-bg-body: #f1f5f9;                   /* Body background (slate-100) */
+    --color-bg-card: rgba(255, 255, 255, 0.9);  /* Card background dengan transparansi */
+    --color-bg-input: #f8fafc;                  /* Input field background (slate-50) */
+    --color-bg-header: rgba(255, 255, 255, 0.95); /* Header background */
+    --color-bg-footer: #ffffff;                 /* Footer background */
+    --color-bg-chart: #f8fafc;                  /* Chart container background */
+    --color-bg-status: #f8fafc;                 /* Status container background */
+    
+    /* Text Colors */
+    --color-text-primary: #1e293b;              /* Primary text (slate-800) */
+    --color-text-secondary: #64748b;            /* Secondary/muted text (slate-500) */
+    --color-text-success: #16a34a;              /* Success state text (green-600) */
+    --color-text-on-button: #ffffff;            /* Text pada button */
+    --color-text-input: #0f172a;                /* Input text color (slate-900) */
+    
+    /* Interactive Elements */
+    --color-button-primary: #3b82f6;            /* Primary button bg (blue-500) */
+    --color-button-primary-hover: #2563eb;      /* Primary button hover (blue-600) */
+    --color-border: #e2e8f0;                    /* Default border (slate-200) */
+    --color-border-input: #cbd5e1;              /* Input border (slate-300) */
+    --color-border-focus: #0ea5e9;              /* Focus state border (sky-500) */
+    
+    /* Status Indicator Colors */
+    --color-status-on: #4ade80;                 /* Active/ON state (green-400) */
+    --color-status-off: #f87171;                /* Inactive/OFF state (red-400) */
+    --color-status-connecting: #facc15;         /* Connecting state (yellow-400) */
+    --color-status-error: #f87171;              /* Error state (red-400) */
+    
+    /* === TYPOGRAPHY === */
+    --font-family-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    
+    /* Font Sizes */
+    --font-size-xs: 0.75rem;       /* 12px */
+    --font-size-sm: 0.875rem;      /* 14px */
+    --font-size-base: 1rem;        /* 16px */
+    --font-size-lg: 1.125rem;      /* 18px */
+    --font-size-xl: 1.25rem;       /* 20px */
+    --font-size-2xl: 1.5rem;       /* 24px */
+    --font-size-3xl: 1.875rem;     /* 30px */
+    --font-size-4xl: 2.25rem;      /* 36px */
+    --font-size-5xl: 3rem;         /* 48px */
+    
+    /* Font Weights */
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    
+    /* === SPACING & LAYOUT === */
+    --spacing-xs: 0.125rem;         /* 2px */
+    --spacing-sm: 0.25rem;          /* 4px */
+    --spacing-md: 0.5rem;           /* 8px */
+    --spacing-lg: 0.75rem;          /* 12px */
+    --spacing-xl: 1rem;             /* 16px */
+    --spacing-2xl: 1.5rem;          /* 24px */
+    
+    /* Border Radius */
+    --radius-sm: 0.25rem;           /* 4px */
+    --radius-md: 0.5rem;            /* 8px */
+    --radius-lg: 0.75rem;           /* 12px */
+    --radius-full: 50%;             /* Circular */
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --shadow-focus: 0 0 0 2px rgba(14, 165, 233, 0.4);
+    
+    /* === TRANSITIONS === */
+    --transition-fast: 0.15s ease-in-out;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
+
+/* =================================================================== */
+/* 2. BASE STYLES & RESET                                              */
+/* =================================================================== */
+
+/**
+ * Base body styling dengan CSS custom properties
+ * Mengatur font dasar dan transisi global
+ */
+body,
+.theme-body {
+    background-color: var(--color-bg-body);
+    color: var(--color-text-primary);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: 
+        background-color var(--transition-normal), 
+        color var(--transition-normal);
+}
+
+/**
+ * Theme-aware chart background
+ */
+.theme-chart-bg {
+    background-color: var(--color-bg-chart);
+    transition: background-color var(--transition-normal);
+}
+
+/**
+ * Theme-aware status container background
+ */
+.theme-status-bg {
+    background-color: var(--color-bg-status);
+    transition: background-color var(--transition-normal);
+}
+
+/**
+ * Additional theme utility classes
+ */
+.text-muted {
+    color: var(--color-text-secondary);
+}
+
+.theme-border {
+    border-color: var(--color-border);
+}
+
+.theme-input-bg {
+    background-color: var(--color-bg-input);
+    border-color: var(--color-border-input);
+    color: var(--color-text-input);
+}
+
+.theme-input-bg:focus {
+    border-color: var(--color-border-focus);
+}
+
+/**
+ * Reset margin dan padding untuk konsistensi
+ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/**
+ * Base styling untuk text elements
+ */
+p, span, div {
+    color: inherit;
+}
+
+
+/* =================================================================== */
+/* 3. TYPOGRAPHY SYSTEM                                               */
+/* =================================================================== */
+
+/**
+ * HIERARCHY: Main Site Header
+ * Brand title dengan ukuran yang responsif
+ */
+.site-header .main-title {
+    color: var(--color-brand-primary);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    line-height: 1.1;
+}
+
+/**
+ * HIERARCHY: Site Subtitle
+ * Subtitle yang muncul di bawah main title
+ */
+.site-subtitle {
+    display: block;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.2;
+}
+
+/**
+ * HIERARCHY: Card Title (H2 Level)
+ * Judul untuk setiap card dengan border bawah
+ */
+.card-title {
+    color: var(--color-brand-accent);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+/**
+ * HIERARCHY: Card Subtitle (H3 Level)
+ * Sub-header di dalam card untuk detail section
+ */
+.card-subtitle {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+/**
+ * UTILITY: Muted Text
+ * Untuk teks dengan emphasis rendah
+ */
+.text-muted {
+    color: var(--color-text-secondary);
+}
+
+/**
+ * UTILITY: Form Labels
+ * Label untuk input fields dan specifications
+ */
+.label {
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+    display: block;
+    margin-bottom: var(--spacing-xs);
+}
+
+
+/* =================================================================== */
+/* 4. LAYOUT COMPONENTS                                               */
+/* =================================================================== */
+
+/**
+ * COMPONENT: Site Header
+ * Header utama website dengan background responsif terhadap theme
+ */
+.site-header {
+    background-color: var(--color-bg-header);
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-sm);
+    transition: background-color var(--transition-normal), border-color var(--transition-normal);
+}
+
+/**
+ * COMPONENT: Site Footer
+ * Footer dengan styling text yang konsisten dan theme-aware
+ */
+.site-footer {
+    background-color: var(--color-bg-footer);
+    border-top: 1px solid var(--color-border);
+    transition: background-color var(--transition-normal), border-color var(--transition-normal);
+}
+
+.site-footer p {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    text-align: center;
+    padding: var(--spacing-xs) var(--spacing-lg);
+}
+
+/**
+ * COMPONENT: Card Container
+ * Container utama untuk semua card dengan background dan shadow
+ */
+.card {
+    background: var(--color-bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-2xl);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--color-border);
+    transition: box-shadow var(--transition-normal);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-1px);
+    transition: box-shadow var(--transition-slow);
+}
+
+
+/* =================================================================== */
+/* 5. DATA DISPLAY COMPONENTS                                         */
+/* =================================================================== */
+
+/**
+ * COMPONENT: Overview Metric Value
+ * Untuk menampilkan nilai numerik utama (RPM, temperature, dll)
+ */
+.overview-metric-value {
+    color: var(--color-text-success);
+    font-size: 2.5rem;
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    display: block;
+}
+
+/**
+ * COMPONENT: Compact Overview Metric Value
+ * Versi compact untuk sidebar dengan ukuran yang lebih kecil
+ */
+.overview-metric-compact {
+    color: var(--color-text-success);
+    font-size: 2rem;
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    display: block;
+    text-align: center;
+}
+
+/**
+ * COMPONENT: Operational Status Text
+ * Untuk menampilkan status operasional (MATI/NYALA)
+ */
+.operational-status-text {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    margin: 0;
+}
+
+/**
+ * COMPONENT: Status Text Consistent
+ * Untuk text status yang konsisten di semua status indicator
+ */
+.status-text-primary {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.status-text-secondary {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    margin: 0;
+    line-height: 1.2;
+}
+
+/**
+ * COMPONENT: Detail Value
+ * Untuk nilai-nilai detail seperti Kp, Ki, Kd
+ */
+.detail-value {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+}
+
+
+/* =================================================================== */
+/* 6. INTERACTIVE COMPONENTS                                          */
+/* =================================================================== */
+
+/**
+ * COMPONENT: Primary Button
+ * Button utama dengan hover states
+ */
+.button-primary {
+    background-color: var(--color-button-primary);
+    color: var(--color-text-on-button);
+    font-weight: var(--font-weight-semibold);
+    padding: var(--spacing-lg) var(--spacing-2xl);
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: 
+        background-color var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+.button-primary:hover {
+    background-color: var(--color-button-primary-hover);
+    transform: translateY(-1px);
+}
+
+.button-primary:active {
+    transform: translateY(0);
+}
+
+/**
+ * COMPONENT: Form Input
+ * Input fields dengan focus states
+ */
+.form-input {
+    background-color: var(--color-bg-input);
+    color: var(--color-text-input);
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-lg);
+    font-size: var(--font-size-base);
+    width: 100%;
+    transition: 
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--color-border-focus);
+    box-shadow: var(--shadow-focus);
+}
+
+.form-input::placeholder {
+    color: var(--color-text-secondary);
+}
+
+
+/* =================================================================== */
+/* 7. STATUS INDICATORS                                               */
+/* =================================================================== */
+
+/**
+ * COMPONENT: Status Indicator Base
+ * Base class untuk semua status indicator dengan ukuran yang konsisten
+ */
+.status-indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: var(--radius-full);
+    display: inline-block;
+    vertical-align: middle;
+    transition: 
+        background-color var(--transition-normal),
+        box-shadow var(--transition-normal);
+}
+
+/**
+ * VARIANT: Large Status Indicator
+ * Untuk status yang lebih prominent, ukuran yang sama untuk konsistensi
+ */
+.motor-status-indicator-large,
+.status-indicator-large {
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-full);
+    display: inline-block;
+    transition: 
+        background-color var(--transition-normal),
+        box-shadow var(--transition-normal);
+}
+
+/**
+ * STATUS STATES
+ * Berbagai state untuk status indicator
+ */
+.status-on {
+    background-color: var(--color-status-on);
+    box-shadow: 0 0 8px var(--color-status-on);
+}
+
+.status-off {
+    background-color: var(--color-status-off);
+    box-shadow: 0 0 8px var(--color-status-off);
+}
+
+.status-connecting {
+    background-color: var(--color-status-connecting);
+    box-shadow: 0 0 8px var(--color-status-connecting);
+    animation: pulse 2s infinite;
+}
+
+.status-error {
+    background-color: var(--color-status-error);
+    box-shadow: 0 0 8px var(--color-status-error);
+    animation: pulse 1s infinite;
+}
+
+/**
+ * ANIMATION: Pulse effect untuk status connecting/error
+ */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+
+/* =================================================================== */
+/* 8. CHART & DATA VISUALIZATION                                      */
+/* =================================================================== */
+
+/**
+ * COMPONENT: Chart Container
+ * Container untuk chart dengan responsive height dan theme-aware styling
+ */
+.chart-container {
+    position: relative;
+    height: 350px;
+    width: 100%;
+    background-color: var(--color-bg-chart);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-sm);
+    transition: background-color var(--transition-normal);
+}
+
+
+/* =================================================================== */
+/* 9. MODAL COMPONENTS                                                */
+/* =================================================================== */
+
+/**
+ * COMPONENT: Modal Overlay
+ * Full-screen overlay untuk modal dengan backdrop yang theme-aware
+ */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+    transition: background-color var(--transition-normal);
+}
+
+/* Dark mode overlay adjustment */
+body.dark-mode .modal {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+/**
+ * COMPONENT: Modal Content
+ * Kotak modal dengan styling dan animasi yang responsive terhadap theme
+ */
+.modal-content {
+    background-color: var(--color-bg-card);
+    margin: auto;
+    padding: var(--spacing-2xl);
+    border: 1px solid var(--color-border);
+    width: 80%;
+    max-width: 600px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    animation: modalSlideIn 0.3s ease-out;
+    transition: 
+        background-color var(--transition-normal), 
+        border-color var(--transition-normal);
+}
+
+/**
+ * COMPONENT: Modal Title
+ */
+.modal-content .modal-title {
+    color: var(--color-brand-accent);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-lg);
+}
+
+/**
+ * COMPONENT: Modal Body
+ */
+.modal-content .modal-body {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    line-height: 1.6;
+}
+
+/**
+ * COMPONENT: Modal Close Button
+ */
+.modal-close-button {
+    color: var(--color-text-secondary);
+    font-size: 28px;
+    font-weight: var(--font-weight-bold);
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    transition: color var(--transition-fast);
+}
+
+.modal-close-button:hover,
+.modal-close-button:focus {
+    color: var(--color-text-primary);
+    text-decoration: none;
+}
+
+/**
+ * ANIMATION: Modal slide-in effect
+ */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =================================================================== */
+/* 10. UTILITY & SPECIAL COMPONENTS                                   */
+/* =================================================================== */
+
+/**
+ * COMPONENT: Gemini Analysis Button
+ * Button untuk AI analysis (hidden by default)
+ */
+.gemini-analysis-button {
+    display: none;
+}
+
+/**
+ * COMPONENT: Floating Action Button untuk Analisa AI
+ * FAB yang mengambang di kanan bawah dengan positioning yang aman
+ */
+.fab-analyze-ai {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 50;
+    
+    /* Styling */
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border: none;
+    border-radius: 28px;
+    padding: 12px 20px;
+    box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+    
+    /* Layout */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 56px;
+    
+    /* Typography */
+    font-size: 16px;
+    font-weight: 800;
+    font-family: var(--font-family-primary);
+    
+    /* Transitions */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0);
+    
+    /* Cursor */
+    cursor: pointer;
+    user-select: none;
+}
+
+.fab-analyze-ai:hover {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    box-shadow: 0 12px 32px rgba(245, 158, 11, 0.4);
+    transform: translateY(-2px) scale(1.02);
+}
+
+.fab-analyze-ai:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+}
+
+.fab-analyze-ai:focus {
+    outline: none;
+    box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3), 0 0 0 3px rgba(245, 158, 11, 0.2);
+}
+
+/* FAB Icon */
+.fab-icon {
+    font-size: 20px;
+    line-height: 1;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+/* FAB Text */
+.fab-text {
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    white-space: nowrap;
+}
+
+/* Dark mode adjustments */
+body.dark-mode .fab-analyze-ai {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
+}
+
+body.dark-mode .fab-analyze-ai:hover {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    box-shadow: 0 12px 32px rgba(245, 158, 11, 0.5);
+}
+
+/* Responsive positioning - avoid navbar and footer */
+@media (max-width: 768px) {
+    .fab-analyze-ai {
+        bottom: 20px;
+        right: 16px;
+        padding: 10px 16px;
+        min-height: 48px;
+        font-size: 13px;
+    }
+    
+    .fab-icon {
+        font-size: 18px;
+    }
+}
+
+/* Ensure FAB doesn't overlap with footer */
+@media (max-height: 600px) {
+    .fab-analyze-ai {
+        bottom: 80px; /* Increased distance from bottom on short screens */
+    }
+}
+
+/* Animation untuk entrance */
+@keyframes fabSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(100px) scale(0.3);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.fab-analyze-ai {
+    animation: fabSlideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both;
+}
+
+/* Hide FAB when modal is open untuk avoid confusion */
+body.modal-open .fab-analyze-ai {
+    opacity: 0.3;
+    pointer-events: none;
+    transform: translateY(-2px) scale(0.9);
+}
+
+/* =================================================================== */
+/* 11. RESPONSIVE DESIGN                                              */
+/* =================================================================== */
+
+/**
+ * BREAKPOINT: Medium screens (768px+)
+ * Responsive adjustments untuk tablet dan desktop
+ */
+@media (min-width: 768px) {
+    /* Typography adjustments */
+    .site-header .main-title {
+        font-size: var(--font-size-2xl);
+    }
+    
+    .site-subtitle {
+        font-size: var(--font-size-base);
+    }
+    
+    .card-title {
+        font-size: var(--font-size-xl);
+    }
+    
+    .overview-metric-value {
+        font-size: var(--font-size-5xl);
+    }
+    
+    .operational-status-text {
+        font-size: var(--font-size-3xl);
+    }
+    
+    /* Layout adjustments */
+    .chart-container {
+        height: 320px;
+    }
+    
+    .card {
+        padding: var(--spacing-2xl);
+    }
+}
+
+/**
+ * BREAKPOINT: Large screens (1024px+)
+ * Additional adjustments untuk desktop besar
+ */
+@media (min-width: 1024px) {
+    .lg-chart-container {
+        height: 350px;
+    }
+    
+    .modal-content {
+        max-width: 700px;
+    }
+}
+
+/**
+ * BREAKPOINT: Extra large screens (1280px+)
+ * Optimizations untuk layar sangat besar
+ */
+@media (min-width: 1280px) {
+    :root {
+        --font-size-base: 1.125rem; /* Slightly larger base font */
+    }
+    
+    .card {
+        padding: 2rem;
+    }
+}
+
+
+/* =================================================================== */
+/* 12. DARK MODE THEME SUPPORT                                       */
+/* =================================================================== */
+
+/**
+ * Dark mode color variables
+ * Diterapkan saat body memiliki class 'dark-mode'
+ */
+body.dark-mode {
+    /* === DARK MODE COLOR PALETTE === */
+    /* Background Colors */
+    --color-bg-body: #0f172a;                   /* Dark slate body background */
+    --color-bg-card: rgba(30, 41, 59, 0.95);    /* Dark card background dengan transparansi */
+    --color-bg-input: #1e293b;                  /* Dark input field background */
+    --color-bg-header: rgba(15, 23, 42, 0.95);  /* Dark header background */
+    --color-bg-footer: #0f172a;                 /* Dark footer background */
+    --color-bg-chart: #1e293b;                  /* Dark chart container background */
+    --color-bg-status: #1e293b;                 /* Dark status container background */
+    
+    /* Text Colors */
+    --color-text-primary: #e2e8f0;              /* Light text untuk dark mode */
+    --color-text-secondary: #94a3b8;            /* Muted light text */
+    --color-text-success: #22c55e;              /* Brighter success green */
+    --color-text-input: #f1f5f9;                /* Light input text */
+    
+    /* Interactive Elements */
+    --color-button-primary: #3b82f6;            /* Same blue, works well on dark */
+    --color-button-primary-hover: #1d4ed8;      /* Darker blue hover */
+    --color-border: #334155;                    /* Dark border color */
+    --color-border-input: #475569;              /* Dark input border */
+    --color-border-focus: #0ea5e9;              /* Keep same focus color */
+    
+    /* Brand colors - sedikit lebih terang di dark mode */
+    --color-brand-primary: #3b82f6;             /* Lighter blue untuk dark mode */
+    --color-brand-accent: #3b82f6;              /* Lighter accent blue */
+}
+
+/**
+ * Dark mode toggle button styling
+ */
+.dark-mode-toggle {
+    background: none;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-full);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    font-size: 1.25rem;
+    color: var(--color-text-secondary);
+}
+
+.dark-mode-toggle:hover {
+    background-color: var(--color-bg-input);
+    border-color: var(--color-border-focus);
+    transform: scale(1.05);
+}
+
+.dark-mode-toggle:focus {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+}
+
+/**
+ * Auto dark mode berdasarkan sistem preference
+ * Akan otomatis apply jika user belum pernah set manual preference
+ */
+@media (prefers-color-scheme: dark) {
+    body:not(.light-mode):not(.dark-mode) {
+        /* Apply dark mode variables if no manual preference */
+        --color-bg-body: #0f172a;
+        --color-bg-card: rgba(30, 41, 59, 0.95);
+        --color-bg-input: #1e293b;
+        --color-bg-header: rgba(15, 23, 42, 0.95);
+        --color-bg-footer: #0f172a;
+        --color-bg-chart: #1e293b;
+        
+        --color-text-primary: #e2e8f0;
+        --color-text-secondary: #94a3b8;
+        --color-text-success: #22c55e;
+        --color-text-input: #f1f5f9;
+        
+        --color-button-primary: #3b82f6;
+        --color-button-primary-hover: #1d4ed8;
+        --color-border: #334155;
+        --color-border-input: #475569;
+        --color-border-focus: #0ea5e9;
+        
+        --color-brand-primary: #3b82f6;
+        --color-brand-accent: #3b82f6;
+    }
+}
+
+/* =================================================================== */
+/* SYSTEM STATUS CARD - HORIZONTAL LAYOUT                            */
+/* =================================================================== */
+
+/**
+ * COMPONENT: System Status Grid
+ * Layout horizontal untuk status motor dan MQTT dalam card Kondisi Sistem
+ */
+.system-status-grid {
+    transition: all var(--transition-normal);
+}
+
+/* Responsive adjustments for system status */
+@media (max-width: 768px) {
+    .system-status-grid {
+        /* Fallback to vertical on small screens */
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .system-status-grid > div {
+        /* Slightly smaller padding on mobile */
+        padding: 0.625rem !important;
+    }
+}
+
+/* Medium screens - tetap 3 kolom tapi dengan gap yang lebih kecil */
+@media (min-width: 769px) and (max-width: 1023px) {
+    .system-status-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0.5rem;
+    }
+    
+    /* Text sizing untuk medium screens */
+    .system-status-grid .status-text-primary {
+        font-size: var(--font-size-xs);
+    }
+    
+    .system-status-grid .status-text-secondary {
+        font-size: 0.65rem;
+    }
+    
+    .system-status-grid .card-subtitle {
+        font-size: 0.65rem;
+    }
+}
+
+/* Large screens - full 3 column horizontal layout */
+@media (min-width: 1024px) {
+    .system-status-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1.25rem;
+    }
+}
+
+/**
+ * ENHANCEMENT: Status Container Improvements
+ * Better visual hierarchy and spacing for horizontal layout
+ */
+.status-container-horizontal {
+    min-height: 60px;
+    transition: all var(--transition-normal);
+}
+
+.status-container-horizontal:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Enhanced spacing for status content inside containers */
+.status-container-horizontal h3 {
+    margin-bottom: 0.5rem;
+}
+
+.status-container-horizontal .flex {
+    margin-top: 0.25rem;
+}
+
+/**
+ * COMPONENT: System Time Display
+ * Enhanced styling for system time in the new layout
+ */
+.system-time-display {
+    background: linear-gradient(135deg, var(--color-bg-card), var(--color-bg-input));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-normal);
+}
+
+.system-time-display:hover {
+    border-color: var(--color-border-focus);
+    box-shadow: var(--shadow-sm);
+}
+
+/**
+ * ENHANCEMENT: Consistent Status Text for System Time
+ * Memastikan text waktu sistem memiliki formatting yang konsisten
+ */
+.system-time-text {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Responsive text sizing for system time */
+@media (max-width: 768px) {
+    .system-time-text {
+        font-size: var(--font-size-xs);
+    }
+}
+
+/* Medium screens - compact text untuk 3 kolom */
+@media (min-width: 769px) and (max-width: 1023px) {
+    .system-time-text {
+        font-size: var(--font-size-xs);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+@media (min-width: 1024px) {
+    .system-time-text {
+        white-space: normal;
+        word-break: break-word;
+    }
+}
+
+/* =================================================================== */
+/* CONTROL SETPOINT LAYOUT                                           */
+/* =================================================================== */
+
+/**
+ * COMPONENT: Inline Setpoint Control
+ * Layout untuk form input dan button yang bersebelahan
+ */
+.setpoint-control-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+}
+
+.setpoint-control-group input {
+    flex: 1;
+    min-width: 0; /* Allows input to shrink if needed */
+}
+
+.setpoint-control-group button {
+    flex-shrink: 0;
+    min-width: fit-content;
+}
+
+/* Responsive behavior for setpoint control */
+@media (max-width: 640px) {
+    .setpoint-control-group {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .setpoint-control-group button {
+        width: 100%;
+    }
+}
+
+/* Enhanced button styling for inline layout */
+.button-primary.inline-button {
+    padding: 0.5rem 1rem;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    white-space: nowrap;
+}
+
+@media (min-width: 641px) {
+    .button-primary.inline-button {
+        min-width: 80px;
+    }
+}
+
+/* =================================================================== */
+/* END OF STYLESHEET                                                  */
+/* =================================================================== */
