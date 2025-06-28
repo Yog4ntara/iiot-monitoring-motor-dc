@@ -1,7 +1,7 @@
 # Dashboard IIoT Motor DC - Sistem Monitoring dan Kontrol
 
-![Dashboard Preview - Light Mode](assets/dashboard-preview-light.png)
-![Dashboard Preview - Dark Mode](assets/dashboard-preview-dark.png)
+![Dashboard Preview - Light Mode](dashboard-preview-light.png)
+![Dashboard Preview - Dark Mode](dashboard-preview-dark.png)
 
 ## 📋 Deskripsi Sistem
 
