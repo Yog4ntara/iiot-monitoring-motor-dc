@@ -1,5 +1,41 @@
 const GEMINI_MODEL_NAME = "gemini-2.0-flash"; // Anda bisa menggunakan model lain jika perlu
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY; // Pastikan Anda sudah mengatur kunci API ini di environment variables
+
+// Fungsi untuk mendapatkan API key (bisa dari localStorage, prompt user, atau hardcode untuk testing)
+function getGeminiApiKey() {
+    // Opsi 1: Ambil dari localStorage (bisa diset dari console atau settings)
+    let apiKey = localStorage.getItem('GEMINI_API_KEY');
+    
+    // Opsi 2: Jika tidak ada di localStorage, prompt user (untuk testing)
+    if (!apiKey) {
+        apiKey = prompt('Masukkan Gemini API Key Anda:');
+        if (apiKey) {
+            localStorage.setItem('GEMINI_API_KEY', apiKey);
+        }
+    }
+    return apiKey;
+}
+
+// Fungsi helper untuk mendapatkan nilai voltage terbaru
+function getLatestVoltageValue() {
+    // Coba ambil dari chart voltage jika tersedia
+    if (typeof motorVoltageChart !== 'undefined' && 
+        motorVoltageChart.data && 
+        motorVoltageChart.data.datasets && 
+        motorVoltageChart.data.datasets[0] && 
+        motorVoltageChart.data.datasets[0].data && 
+        motorVoltageChart.data.datasets[0].data.length > 0) {
+        const voltageData = motorVoltageChart.data.datasets[0].data;
+        const latestVoltage = voltageData[voltageData.length - 1];
+        return latestVoltage ? latestVoltage.toFixed(2) : 'N/A';
+    }
+    
+    // Jika chart tidak tersedia, coba akses currentVoltage global jika ada
+    if (typeof window.currentVoltage !== 'undefined') {
+        return window.currentVoltage.toFixed(2);
+    }
+    
+    return 'N/A';
+}
 
 // --- FUNGSI ANALISIS DENGAN GEMINI ---
 async function handleGeminiAnalysis() {
@@ -10,7 +46,14 @@ async function handleGeminiAnalysis() {
     const analysisTimeString = analysisTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + " - " + analysisTime.toLocaleDateString('id-ID', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
     
     if (geminiAnalysisContent) {
-        geminiAnalysisContent.innerHTML = `<p class="text-xs text-slate-500 mb-2">Analisis dilakukan pada: ${analysisTimeString}</p><div class="loader"></div><p class="text-center mt-2">Sedang menganalisis dengan AI...</p>`;
+        geminiAnalysisContent.innerHTML = `
+            <p class="text-xs text-slate-500 mb-3">Analisis dilakukan pada: ${analysisTimeString}</p>
+            <div class="flex flex-col items-center justify-center py-6">
+                <div class="loader mb-3"></div>
+                <p class="text-center text-sm text-slate-600 dark:text-slate-400">Sedang menganalisis dengan AI...</p>
+                <p class="text-center text-xs text-slate-500 mt-1">Mohon tunggu beberapa saat</p>
+            </div>
+        `;
     }
 
     // Dapatkan elemen-elemen yang diperlukan dari UI
@@ -20,48 +63,98 @@ async function handleGeminiAnalysis() {
         targetRpm: targetRpmFromMotorElement ? targetRpmFromMotorElement.textContent.trim() : 'N/A',
         kp: kpValueElement ? kpValueElement.textContent.trim() : 'N/A',
         ki: kiValueElement ? kiValueElement.textContent.trim() : 'N/A',
-        kd: kdValueElement ? kdValueElement.textContent.trim() : 'N/A'
+        kd: kdValueElement ? kdValueElement.textContent.trim() : 'N/A',
+        tegangan: getLatestVoltageValue(),
+        statusMqtt: mqttStatusTextElement ? mqttStatusTextElement.textContent.trim() : 'N/A'
     };
 
     // Ambil data dari chart
-    let chartDataString = "Data historis kecepatan tidak tersedia atau grafik kosong.";
+    let chartDataString = "Data historis tidak tersedia atau grafik kosong.";
     if (typeof motorSpeedChart !== 'undefined' && motorSpeedChart.data.labels.length > 0) {
         const labels = motorSpeedChart.data.labels;
-        const speeds = motorSpeedChart.data.datasets[0].data;
-        const lastN = 20;
+        const speedData = motorSpeedChart.data.datasets[1].data; // Dataset kecepatan aktual
+        const setpointData = motorSpeedChart.data.datasets[0].data; // Dataset setpoint
+        const lastN = 15;
         const startIndex = Math.max(0, labels.length - lastN);
         
         let historicalDataPoints = [];
         for (let i = startIndex; i < labels.length; i++) {
-            historicalDataPoints.push(`- Pukul ${labels[i]}: ${speeds[i]} RPM`);
+            historicalDataPoints.push(`- Pukul ${labels[i]}: Aktual ${speedData[i]} RPM, Target ${setpointData[i]} RPM`);
         }
         if (historicalDataPoints.length > 0) {
-            chartDataString = "Berikut adalah beberapa data kecepatan historis terakhir (RPM):\n" + historicalDataPoints.join("\n");
+            chartDataString = "Berikut adalah data historis kecepatan terakhir:\n" + historicalDataPoints.join("\n");
         }
     }
 
-    const prompt = `Anda adalah seorang System Instrumentation and Control Engineering yang sedang menjaga suatu Motor DC industri. 
-Data motor saat ini (pada waktu analisis: ${analysisTimeString}):
-- Kecepatan Aktual: ${motorData.kecepatanAktual}
+    // Ambil data tegangan historis jika tersedia
+    let voltageDataString = "";
+    if (typeof motorVoltageChart !== 'undefined' && motorVoltageChart.data.labels.length > 0) {
+        const voltageData = motorVoltageChart.data.datasets[0].data;
+        const labels = motorVoltageChart.data.labels;
+        const lastN = 10;
+        const startIndex = Math.max(0, labels.length - lastN);
+        
+        let voltageDataPoints = [];
+        for (let i = startIndex; i < labels.length; i++) {
+            voltageDataPoints.push(`- Pukul ${labels[i]}: ${voltageData[i]} V`);
+        }
+        if (voltageDataPoints.length > 0) {
+            voltageDataString = "\n\nData historis tegangan terakhir:\n" + voltageDataPoints.join("\n");
+        }
+    }
+
+    const prompt = `Anda adalah seorang System Instrumentation and Control Engineering yang berpengalaman dalam monitoring dan troubleshooting Motor DC industri dengan sistem kontrol PID. 
+
+INFORMASI SISTEM SAAT INI (Waktu analisis: ${analysisTimeString}):
+═════════════════════════════════════════════════════════════════════════════════
+📊 DATA REAL-TIME MOTOR:
+- Kecepatan Aktual: ${motorData.kecepatanAktual} RPM
+- Target RPM (Setpoint): ${motorData.targetRpm}
+- Tegangan Motor: ${motorData.tegangan} V
 - Status Operasional: ${motorData.statusOperasional}
-- Target RPM (dari Motor): ${motorData.targetRpm}
-- Kp: ${motorData.kp}, Ki: ${motorData.ki}, Kd: ${motorData.kd}
+- Status Komunikasi MQTT: ${motorData.statusMqtt}
 
-${chartDataString}
+🎛️ PARAMETER PID CONTROLLER:
+- Proportional (Kp): ${motorData.kp}
+- Integral (Ki): ${motorData.ki}
+- Derivative (Kd): ${motorData.kd}
 
-Motor ini dilaporkan dalam kondisi "${motorData.statusOperasional}" dan kecepatan "${motorData.kecepatanAktual}".
-Berdasarkan semua data di atas (data aktual dan historis), berikan analisis singkat dalam poin-poin (gunakan format markdown untuk poin):
+📈 DATA HISTORIS:
+${chartDataString}${voltageDataString}
 
-Membahas Problem dan analisis:
-1.  Kemungkinan penyebab umum masalah ini (jika ada masalah terdeteksi dari tren historis atau data aktual).
-2.  Langkah-langkah pemeriksaan awal yang disarankan untuk operator berdasarkan analisis data.
-3.  Rekomendasi umum untuk tindakan selanjutnya.
-4.  Jika tidak ada masalah signifikan yang terdeteksi, berikan konfirmasi bahwa motor beroperasi dalam batas normal atau sesuai ekspektasi berdasarkan data dan tren historis, dan jelaskan secara singkat apa yang sedang terjadi (misal: motor stabil pada setpoint, sedang dalam transisi, baru dinyalakan, dll.).
+TUGAS ANALISIS:
+═════════════════════════════════════════════════════════════════════════════════
+Berdasarkan semua data di atas, berikan analisis komprehensif dalam format markdown dengan poin-poin berikut:
 
-Jawaban harus dalam Bahasa Indonesia yang jelas dan mudah dimengerti. Format output harus berupa poin-poin markdown.`;
+## 🔍 **Status Sistem Saat Ini**
+- Evaluasi kondisi operasional motor berdasarkan data real-time
+- Analisis performa PID controller (response time, overshoot, steady-state error)
+- Penilaian kualitas tracking setpoint
+
+## ⚠️ **Identifikasi Masalah (Jika Ada)**
+- Deteksi anomali dari tren data historis
+- Identifikasi masalah pada sistem kontrol atau hardware
+- Analisis penyimpangan dari parameter normal
+
+## 🔧 **Diagnosis dan Rekomendasi**
+- Langkah pemeriksaan yang perlu dilakukan operator
+- Rekomendasi penyesuaian parameter PID (jika diperlukan)
+- Tindakan korektif atau preventif yang disarankan
+
+## 📊 **Kesimpulan Teknis**
+- Ringkasan kondisi sistem secara keseluruhan
+- Prediksi performa jangka pendek
+- Rekomendasi monitoring lanjutan
+
+CATATAN: Jika sistem beroperasi normal, berikan konfirmasi dan jelaskan karakteristik operasi yang sedang berlangsung. Gunakan Bahasa Indonesia yang jelas dan teknis yang mudah dipahami operator.`;
 
     try {
-        const apiKey = GEMINI_API_KEY;
+        const apiKey = getGeminiApiKey();
+        
+        if (!apiKey) {
+            throw new Error('API Key Gemini tidak ditemukan. Silakan set API key terlebih dahulu.');
+        }
+        
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL_NAME}:generateContent?key=${apiKey}`;
         const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
 
@@ -91,7 +184,7 @@ Jawaban harus dalam Bahasa Indonesia yang jelas dan mudah dimengerti. Format out
         const result = await response.json();
         
         // Tampilkan waktu analisis lagi bersama dengan hasil
-        const timePrefix = `<p class="text-xs text-slate-500 mb-2">Analisis dilakukan pada: ${analysisTimeString}</p>`;
+        const timePrefix = `<p class="text-xs text-slate-500 mb-3 border-b border-slate-200 dark:border-slate-700 pb-2">Analisis dilakukan pada: ${analysisTimeString}</p>`;
 
         if (geminiAnalysisContent) {
             if (result.candidates && result.candidates.length > 0 &&
@@ -102,22 +195,24 @@ Jawaban harus dalam Bahasa Indonesia yang jelas dan mudah dimengerti. Format out
             // Konversi **text** menjadi bold <strong>text</strong>
             text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             
+            // Konversi markdown headers ## menjadi HTML headers
+            text = text.replace(/^## (.*$)/gm, '<h3 class="text-lg font-semibold mt-4 mb-2 text-blue-600 dark:text-blue-400">$1</h3>');
+            
             // Konversi "*" pada paragraf menjadi list numbered
             text = text.replace(/^\d+\.\s/gm, '<br><strong>$&</strong> '); // Menambahkan <br> sebelum setiap nomor list
             text = text.replace(/^\*\s/gm, '<br><strong>•</strong> '); // Mengganti bullet point dengan <strong>•</strong>
-            
+            text = text.replace(/^- /gm, '<br><strong>•</strong> '); // Handle dash bullets juga
             
             // Ganti newline dengan <br> untuk pemformatan paragraf
             let htmlText = text.trim().replace(/\n/g, '<br>');
 
-            geminiAnalysisContent.innerHTML = timePrefix + htmlText; // Gabungkan waktu dengan hasil analisis
+            geminiAnalysisContent.innerHTML = timePrefix + `<div class="analysis-content">${htmlText}</div>`; // Gabungkan waktu dengan hasil analisis
 
             } else {
             console.error("Unexpected Gemini API response structure:", result);
-            geminiAnalysisContent.innerHTML = timePrefix + "Gagal mendapatkan analisis dari AI. Struktur respons tidak sesuai.";
+            geminiAnalysisContent.innerHTML = timePrefix + "<div class='text-red-500'>Gagal mendapatkan analisis dari AI. Struktur respons tidak sesuai.</div>";
             if (result.promptFeedback && result.promptFeedback.blockReason) {
-                // Menggunakan textContent untuk bagian ini agar tidak merusak HTML yang sudah ada (timePrefix)
-                geminiAnalysisContent.innerHTML += `<br>Alasan pemblokiran prompt: ${result.promptFeedback.blockReason}`;
+                geminiAnalysisContent.innerHTML += `<br><span class="text-red-600">Alasan pemblokiran prompt: ${result.promptFeedback.blockReason}</span>`;
             }
             }
         }
