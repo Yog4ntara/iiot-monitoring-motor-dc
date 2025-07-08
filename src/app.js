@@ -279,6 +279,16 @@ app.get('/api/logs/latest', async (req, res) => {
     }
 });
 
+// Endpoint untuk mendapatkan Gemini API key
+app.get('/api/gemini/key', (req, res) => {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+        console.error('GEMINI_API_KEY not found in environment variables');
+        return res.status(500).json({ error: 'Gemini API key not configured' });
+    }
+    res.json({ apiKey: apiKey });
+});
+
 app.get('/api/logs', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM motor_logs ORDER BY timestamp DESC');

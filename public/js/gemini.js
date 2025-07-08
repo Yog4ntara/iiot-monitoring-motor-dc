@@ -1,11 +1,25 @@
 const GEMINI_MODEL_NAME = "gemini-2.0-flash"; // Anda bisa menggunakan model lain jika perlu
 
-// Fungsi untuk mendapatkan API key (bisa dari localStorage, prompt user, atau hardcode untuk testing)
-function getGeminiApiKey() {
-    // Opsi 1: Ambil dari localStorage (bisa diset dari console atau settings)
+// Fungsi untuk mendapatkan API key dari server endpoint (menggunakan .env)
+async function getGeminiApiKey() {
+    try {
+        // Opsi 1: Ambil dari server endpoint (menggunakan environment variable)
+        const response = await fetch('/api/gemini/key');
+        if (response.ok) {
+            const data = await response.json();
+            console.log('API key berhasil diambil dari server');
+            return data.apiKey;
+        } else {
+            console.warn('Gagal mengambil API key dari server:', response.status);
+        }
+    } catch (error) {
+        console.warn('Error saat mengambil API key dari server:', error);
+    }
+    
+    // Opsi 2: Fallback ke localStorage 
     let apiKey = localStorage.getItem('GEMINI_API_KEY');
     
-    // Opsi 2: Jika tidak ada di localStorage, prompt user (untuk testing)
+    // Opsi 3: Jika tidak ada di localStorage, prompt user (untuk testing)
     if (!apiKey) {
         apiKey = prompt('Masukkan Gemini API Key Anda:');
         if (apiKey) {
@@ -149,7 +163,7 @@ Berdasarkan semua data di atas, berikan analisis komprehensif dalam format markd
 CATATAN: Jika sistem beroperasi normal, berikan konfirmasi dan jelaskan karakteristik operasi yang sedang berlangsung. Gunakan Bahasa Indonesia yang jelas dan teknis yang mudah dipahami operator.`;
 
     try {
-        const apiKey = getGeminiApiKey();
+        const apiKey = await getGeminiApiKey();
         
         if (!apiKey) {
             throw new Error('API Key Gemini tidak ditemukan. Silakan set API key terlebih dahulu.');
